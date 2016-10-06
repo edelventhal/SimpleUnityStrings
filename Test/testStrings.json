@@ -1,0 +1,25 @@
+{
+    "English":
+    {
+        "intro":
+        {
+            "hello": "Hello, World!",
+            "bye": "Goodbye, {0}! I hope you enjoy seeing {1}!",
+            "options":
+            {
+                "copy": "Copy",
+                "paste": "Paste"
+            }
+        },
+        "choices":
+        [
+            "Choice A",
+            "Choice B"
+        ],
+        "monkey": "melon"
+    },
+    "Spanish":
+    {
+        "monkey": "melón"
+    }
+}
