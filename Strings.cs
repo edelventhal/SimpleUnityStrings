@@ -77,30 +77,24 @@ using System.Text;
 
 namespace SimpleUnityStrings
 {
-    public class Strings : MonoBehaviour
+    public class Strings
     {
-        public TextAsset strings;
-    
+        public const string STRINGS_LOC = "locale/strings.json";
         private static JSONNode stringTable;
         private static Dictionary<string,List<int>> remainingArrayIndices;
-        protected static Strings instance;
     
-        public void Awake()
+        public static void Init()
         {
-            if ( instance != null && instance != this )
+            if ( IsInitialized )
             {
-                Object.Destroy( gameObject );
                 return;
             }
-            instance = this;
-            Object.DontDestroyOnLoad( gameObject );
-        
-            stringTable = JSON.Parse( strings.text );
+            stringTable = JSON.Parse( Resources.Load<TextAsset>(STRINGS_LOC).text );
             remainingArrayIndices = new Dictionary<string,List<int>>();
             DefaultLanguage = "" + SystemLanguage.English;
         }
     
-        public JSONNode LanguageTable
+        public static JSONNode LanguageTable
         {
             get
             {
@@ -118,7 +112,7 @@ namespace SimpleUnityStrings
         {
             get
             {
-                return instance.LanguageTable;
+                return LanguageTable;
             }
         }
     
@@ -132,7 +126,7 @@ namespace SimpleUnityStrings
         {
             get
             {
-                return instance != null;
+                return stringTable != null;
             }
         }
     
@@ -140,6 +134,8 @@ namespace SimpleUnityStrings
         //See comments at the top for details.
         public static string Get( string key, params string[] substitutions )
         {
+            Init();
+
             JSONNode node = GetNodeForKey( key );
             if ( node == null )
             {
@@ -151,6 +147,8 @@ namespace SimpleUnityStrings
     
         public static int GetCount( string key )
         {
+            Init();
+
             JSONNode node = GetNodeForKey( key );
             if ( node == null )
             {
@@ -162,12 +160,7 @@ namespace SimpleUnityStrings
     
         private static JSONNode GetNodeForKey( string key )
         {
-            if ( instance == null )
-            {
-                return "NOINSTANCE: \"" + key + "\"";
-            }
-        
-            JSONNode languageTable = instance.LanguageTable;
+            JSONNode languageTable = LanguageTable;
         
             string[] keyParts = key.Split( new char[]{ '/' } );
             string parentKey = "";
