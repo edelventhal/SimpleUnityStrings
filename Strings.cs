@@ -79,35 +79,35 @@ namespace SimpleUnityStrings
 {
     public class Strings
     {
-        public const string STRINGS_LOC = "locale/strings.json";
+        public const string STRINGS_LOC = "locale/strings";
         private static JSONNode stringTable;
-        private static Dictionary<string,List<int>> remainingArrayIndices;
-    
+        private static Dictionary<string, List<int>> remainingArrayIndices;
+
         public static void Init()
         {
             if ( IsInitialized )
             {
                 return;
             }
-            stringTable = JSON.Parse( Resources.Load<TextAsset>(STRINGS_LOC).text );
-            remainingArrayIndices = new Dictionary<string,List<int>>();
+            stringTable = JSON.Parse( Resources.Load<TextAsset>( STRINGS_LOC ).text );
+            remainingArrayIndices = new Dictionary<string, List<int>>();
             DefaultLanguage = "" + SystemLanguage.English;
         }
-    
+
         public static JSONNode LanguageTable
         {
             get
             {
                 string language = "" + Application.systemLanguage;
-                if ( stringTable[ language ] == null )
+                if ( stringTable[language] == null )
                 {
                     language = "" + DefaultLanguage;
                 }
-            
-                return stringTable[ language ];
+
+                return stringTable[language];
             }
         }
-    
+
         public static JSONNode RawTable
         {
             get
@@ -115,13 +115,13 @@ namespace SimpleUnityStrings
                 return LanguageTable;
             }
         }
-    
+
         public static string DefaultLanguage
         {
             get;
             set;
         }
-    
+
         public static bool IsInitialized
         {
             get
@@ -129,7 +129,7 @@ namespace SimpleUnityStrings
                 return stringTable != null;
             }
         }
-    
+
         //Returns a localized string using the passed key and any substitutions.
         //See comments at the top for details.
         public static string Get( string key, params string[] substitutions )
@@ -141,10 +141,10 @@ namespace SimpleUnityStrings
             {
                 return "ERROR: \"" + key + "\"";
             }
-        
+
             return GetSubstitutedString( node.Value, substitutions );
         }
-    
+
         public static int GetCount( string key )
         {
             Init();
@@ -152,17 +152,17 @@ namespace SimpleUnityStrings
             JSONNode node = GetNodeForKey( key );
             if ( node == null )
             {
-                return  -1;
+                return -1;
             }
-        
+
             return node.Count;
         }
-    
+
         private static JSONNode GetNodeForKey( string key )
         {
             JSONNode languageTable = LanguageTable;
-        
-            string[] keyParts = key.Split( new char[]{ '/' } );
+
+            string[] keyParts = key.Split( new char[] { '/' } );
             string parentKey = "";
             JSONNode node = languageTable;
             for ( int partIndex = 0; partIndex < keyParts.Length; partIndex++ )
@@ -171,9 +171,9 @@ namespace SimpleUnityStrings
                 {
                     return "ERROR: \"" + key + "\"";
                 }
-            
-                string keyPart = keyParts[ partIndex ];
-            
+
+                string keyPart = keyParts[partIndex];
+
                 JSONArray arr = node.AsArray;
                 if ( arr != null )
                 {
@@ -181,35 +181,35 @@ namespace SimpleUnityStrings
                 }
                 else
                 {
-                    node = node[ keyPart ];
+                    node = node[keyPart];
                 }
-            
+
                 parentKey += keyPart;
             }
-        
+
             return node;
         }
-    
+
         private static string GetSubstitutedString( string str, string[] substitutions )
         {
             if ( substitutions.Length <= 0 )
             {
                 return str;
             }
-                
+
             if ( !str.Contains( "{" ) )
             {
                 return str;
             }
-        
+
             StringBuilder buffer = new StringBuilder( str );
             for ( int substitutionIndex = 0; substitutionIndex < substitutions.Length; substitutionIndex++ )
             {
-                buffer = buffer.Replace( "{" + substitutionIndex + "}", substitutions[ substitutionIndex ] );
+                buffer = buffer.Replace( "{" + substitutionIndex + "}", substitutions[substitutionIndex] );
             }
             return buffer.ToString();
         }
-    
+
         private static JSONNode GetArrayValue( JSONArray arr, string keyPart, string parentKey )
         {
             if ( keyPart == "?" )
@@ -220,7 +220,7 @@ namespace SimpleUnityStrings
             {
                 return GetRandomExcludedElement( arr, parentKey );
             }
-            else if ( keyPart[ 0 ] == 'b' )
+            else if ( keyPart[0] == 'b' )
             {
                 return GetBoundedElement( arr, keyPart.Substring( 1 ) );
             }
@@ -229,53 +229,53 @@ namespace SimpleUnityStrings
                 return GetElement( arr, keyPart );
             }
         }
-    
+
         private static JSONNode GetRandomElement( JSONArray arr )
         {
             if ( arr.Count <= 0 )
             {
                 return null;
             }
-        
-            return arr[ Random.Range( 0, arr.Count ) ];
+
+            return arr[Random.Range( 0, arr.Count )];
         }
-    
+
         private static JSONNode GetRandomExcludedElement( JSONArray arr, string key )
         {
             if ( arr.Count <= 0 )
             {
                 return null;
             }
-        
+
             //create the list for this key if it does not yet exist
             if ( !remainingArrayIndices.ContainsKey( key ) )
             {
-                remainingArrayIndices[ key ] = new List<int>();
+                remainingArrayIndices[key] = new List<int>();
             }
-        
+
             //if the list is out of options, populate it
-            if ( remainingArrayIndices[ key ].Count <= 0 )
+            if ( remainingArrayIndices[key].Count <= 0 )
             {
                 for ( int index = 0; index < arr.Count; index++ )
                 {
-                    remainingArrayIndices[ key ].Add( index );
+                    remainingArrayIndices[key].Add( index );
                 }
             }
-        
+
             //return a random element from the list, and remove that from the list
-            int randIndex = Random.Range( 0, remainingArrayIndices[ key ].Count );
-            int arrIndex = remainingArrayIndices[ key ][ randIndex ];
-            remainingArrayIndices[ key ].RemoveAt( randIndex );
-            return arr[ arrIndex ];
+            int randIndex = Random.Range( 0, remainingArrayIndices[key].Count );
+            int arrIndex = remainingArrayIndices[key][randIndex];
+            remainingArrayIndices[key].RemoveAt( randIndex );
+            return arr[arrIndex];
         }
-    
+
         private static JSONNode GetBoundedElement( JSONArray arr, string key )
         {
             if ( arr.Count <= 0 )
             {
                 return null;
             }
-        
+
             try
             {
                 int keyIndex = int.Parse( key );
@@ -287,19 +287,19 @@ namespace SimpleUnityStrings
                 {
                     keyIndex = arr.Count - 1;
                 }
-                return arr[ keyIndex ];
+                return arr[keyIndex];
             }
             catch
             {
                 return null;
             }
         }
-    
+
         private static JSONNode GetElement( JSONArray arr, string key )
         {
             try
             {
-                return arr[ int.Parse( key ) ];
+                return arr[int.Parse( key )];
             }
             catch
             {
