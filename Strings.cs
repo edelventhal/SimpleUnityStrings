@@ -166,6 +166,11 @@ namespace SimpleUnityStrings
             {
                 return "NOINSTANCE: \"" + key + "\"";
             }
+			
+            if ( key == null )
+            {
+                return "ERROR: null key";
+            }
         
             JSONNode languageTable = instance.LanguageTable;
         
