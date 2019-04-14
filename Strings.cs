@@ -160,6 +160,11 @@ namespace SimpleUnityStrings
 
         private static JSONNode GetNodeForKey( string key )
         {
+            if ( key == null )
+            {
+                return "ERROR: null key";
+            }
+			
             JSONNode languageTable = LanguageTable;
 
             string[] keyParts = key.Split( new char[] { '/' } );
