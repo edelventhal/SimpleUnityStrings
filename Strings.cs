@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
+using Unity.VisualScripting;
 
 /**
  * Simple but powerful interface for localizing strings in Unity. Also
@@ -135,7 +136,7 @@ namespace SimpleUnityStrings
                 return instance != null;
             }
         }
-    
+
         //Returns a localized string using the passed key and any substitutions.
         //See comments at the top for details.
         public static string Get( string key, params string[] substitutions )
@@ -160,6 +161,36 @@ namespace SimpleUnityStrings
             return node.Count;
         }
     
+        public static string Capitalize(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return str;
+
+            var sb = new StringBuilder(str.Length);
+            bool capitalizeNext = true;
+
+            foreach (char c in str)
+            {
+                if (capitalizeNext)
+                {
+                    sb.Append(char.ToUpper(c));
+                    capitalizeNext = false;
+                }
+                else
+                {
+                    capitalizeNext = char.IsWhiteSpace(c);
+                    sb.Append(c);
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public static string CapitalizeFirstOnly(string str)
+        {
+            return string.Concat(str[0].ToString().ToUpper(), str[1..]);
+        }
+
         private static JSONNode GetNodeForKey( string key )
         {
             if ( instance == null )
